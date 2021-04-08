@@ -18,6 +18,13 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		commitment,phi_commit,phi_commit_dual,I_commit:=gen_commitment_odd();
 		commit_time:=timediff(t);
 		tt:=ClockCycles();
+		
+		// to add hard relation, need random integer to extend commitment and its ideal equivalent
+		// pick random int...what are the options here? check SIDH
+		// compute isogeny from E_1 to E_1 / (P_y + int Q_y)
+		// find the equivalent ideal (this function is likely somewhere in sqisign.m
+		// compose the commitment with this new extension to get new input for next line
+		
 		phi_chall,chall,H_chall:=gen_honest_challenge_prover(phi_commit_dual,I_commit,message);
 		challenge_time :=timediff(tt);
 
