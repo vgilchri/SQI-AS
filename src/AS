@@ -1,8 +1,9 @@
 
 load "src/sqisign.m";
 
-// generate hard relation from same base curve as sqisign: (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3?
-
+// generate hard relation from same base curve as sqisign: 
+// (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3?
+// look at how commitment is generated in sqisign.m and sidh
 
 sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 	order:=O0;
@@ -19,11 +20,17 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		commit_time:=timediff(t);
 		tt:=ClockCycles();
 		
-		// to add hard relation, need random integer to extend commitment and its ideal equivalent
-		// pick random int...what are the options here? check SIDH
+		// pick random int from Z_p
 		// compute isogeny from E_1 to E_1 / (P_y + int Q_y)
-		// find the equivalent ideal (this function is likely somewhere in sqisign.m
-		// compose the commitment with this new extension to get new input for next line
+		phi_ext := 
+		gen_phi_ext := 
+		// compute its dual: dual_odd_isogeny() ? Check requirements: compute the dual of an isogeny of odd degree, gen contains the generator of isogenies in the usual form, in the fourth argument, there is a point orthogonal to the kernel
+//the kernel of the dual is included		
+		phi_ext_dual := dual_odd_isogeny(phi_ext, gen_phi_ext)
+		// compose the commitment with this new extension to get new input for next line...compose duals?
+		new_commit, new_commit_dual := 
+//the challenge uses the 128 bits of 3 and 5 torsions
+// the commitment needs to have 256 bits at least, this is obtained by taking all the remaining odd torsion
 		
 		phi_chall,chall,H_chall:=gen_honest_challenge_prover(phi_commit_dual,I_commit,message);
 		challenge_time :=timediff(tt);
