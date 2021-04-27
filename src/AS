@@ -2,8 +2,11 @@
 load "src/sqisign.m";
 
 // generate hard relation from same base curve as sqisign: 
-// (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3?
+// (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3 (hard coded for now)
 // look at how commitment is generated in sqisign.m and sidh
+
+// compute the commitment extension
+// the degree of the challenge isogeny is hardcoded in this function
 
 sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 	order:=O0;
@@ -21,19 +24,40 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		tt:=ClockCycles();
 		
 		// pick random int from Z_p
-		// compute isogeny from E_1 to E_1 / (P_y + int Q_y)
-		phi_ext := 
-		gen_phi_ext := 
-		// compute its dual: dual_odd_isogeny() ? Check requirements: compute the dual of an isogeny of odd degree, gen contains the generator of isogenies in the usual form, in the fourth argument, there is a point orthogonal to the kernel
-//the kernel of the dual is included		
-		phi_ext_dual := dual_odd_isogeny(phi_ext, gen_phi_ext)
-		// compose the commitment with this new extension to get new input for next line...compose duals?
-		new_commit, new_commit_dual := 
+		c := Random(1,p);
+		
+		// compute isogeny from E_1 to E_1 / (P_y + c Q_y)
+		// find its degree
+		// compute the kernel generator
+		ker_ext:= Evaluate(phi_commit,P_y + c*Q_y);
+		// find the order of the kernel generator
+		ker_ext_deg := Order(ker_ext);
+		
+	// compute the commitment extension
+		phi_ext := BigIsogeny(ker_ext, ker_ext_deg)
+		phi_ext_dual := dual_odd_isogeny(phi_ext, ker_ext);
+		
+		// how to factor ker_ext_deg?????????????????????????????????????????????????? if we choose P_y and Q_y to be power of 3, then phi_ext also be power of 3
+		z=0;
+		checker := 1;
+		repeat
+			checker := checker*3;
+			z +:= 1;		
+		until checker eq ker_ext_deg;		
+		
+		// ker = ker_ext?? P, Q = phi(P_y), phi(Q_y)??
+		phi_ext_I := kernel_to_ideal_O0_prime_power(3,z,ker,P,Q);
+		
+		// compose the commitment with this new extension to get new input for next line...compose duals? dual_two_isogenies_kernel:=function(isogenies,kernel)		new_commit, new_commit_dual := 
 //the challenge uses the 128 bits of 3 and 5 torsions
 // the commitment needs to have 256 bits at least, this is obtained by taking all the remaining odd torsion
 		
-		phi_chall,chall,H_chall:=gen_honest_challenge_prover(phi_commit_dual,I_commit,message);
+		phi_chall,chall,H_chall:=gen_honest_challenge_prover(phi_ext_dual,phi_ext_I,message);
 		challenge_time :=timediff(tt);
+		
+		// compose phi_commit and phi_ext, make this the new phi_commit
+		// line 79 uses 'cat' with two isogenies....is this composition?
+		commitment,phi_commit,phi_commit_dual,I_commit:= phi_ext`codomain, phi_commit cat phi_ext, phi_ext_dual cat phi_commit_dual , I_commit*phi_ext_I;
 
 		//generate the signature ideal
 		tt:=ClockCycles();
@@ -54,15 +78,48 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		walk, zip, last_step,len:=normalized_two_walk(sign_isogeny,sign_isom);
 		sign_time:=timediff(t);
 
-
-
-
 		//computing the verification
 		tt:=ClockCycles();
 		ver:=verify(commitment,message,zip,pk,len,last_step);
 		assert(ver);
 		if not ver then "problem with the verification"; end if;
 		verif_time:=timediff(tt);
+		
+		// evaluate the secret isogeny at the two generator points of the hard relation for use in sqi_adapt
+		tao_P := Evaluate(sk, P_y);
+		tao_Q := Evaluate(sk, Q_y);
 
-	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2);
+	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tao_P, tao_Q;
 end function;
+
+// (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3 (hard coded for now)
+
+sqi_adapt:=function(wit, presig,sk)
+
+	// compute beta, using the witness
+	// determine kernel generator
+	ker_beta := tao_P + wit*tao_Q;
+	// find order of kernel generator
+	deg_beta := Order(ker_beta);
+	//compute isogeny
+	beta := BigIsogeny(ker_beta, deg_beta);
+	
+	// compute beta_dual
+	beta_dual:=dual_odd_isogeny(beta, ker_beta);
+	
+	// compose presig ideal with beta dual ideal
+	// run KLPT on this ideal
+	// convert to isogeny
+	full_sig := ;
+
+end function;
+
+sqi_extract:= function(presig, sig)
+
+	// compose presig ideal with sig dual ideal 
+	// run KLPT to get single ideal back
+	// convert this to isogeny
+	// from this extract the kernel generator
+
+end function;
+
