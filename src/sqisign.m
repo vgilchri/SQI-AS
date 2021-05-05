@@ -1659,7 +1659,7 @@ gen_commitment_odd:=function()
 	phi_commit:=list_kernel_generators_to_isogeny(gen_commit);
 	phi_dual:=dual_odd_isogeny(phi_commit,gen_commit);
 	commitment:=codomain(phi_commit[#phi_commit]);
-	return commitment,phi_commit,phi_dual,H;
+	return commitment,phi_commit,phi_dual,H,P,Q;
 end function;
 
 //for now the challenge is just random
