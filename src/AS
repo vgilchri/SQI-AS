@@ -4,6 +4,7 @@ load "src/sqisign.m";
 // generate hard relation from same base curve as sqisign: 
 // (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3 (hard coded for now)
 // look at how commitment is generated in sqisign.m and sidh
+hard_rel:=;
 
 isogeny_to_ideal_SQIAS:=function(iso,P,Q);
 	// given only a prime-powered isogeny, return a corresponding ideal
@@ -29,7 +30,7 @@ end function;
 // compute the commitment extension
 // the degree of the challenge isogeny is hardcoded in this function
 
-sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
+sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, hard_rel)
 	order:=O0;
 	B<i,j,k>:=Parent(Basis(order)[1]);
 	w1 := i;
@@ -44,7 +45,7 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		commit_time:=timediff(t);
 		tt:=ClockCycles();
 		
-	// compute the randomness shift with an SIDH
+		// compute the randomness shift with an SIDH
 		// find the deconstruction of the commitment kernel in terms of given generators
 		// compute the kernel generator
 		prime_power:= PrimeDivisors(phi_commit`ker)[1];
@@ -57,6 +58,7 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		until P_1 + c*Q_1 eq phi_commit`ker;		
 	// compute it as evaluated at the hard relation
 	// access generators evaluated at hard relation
+// What is the best structure to hold this info?
 		P_2:=;
 		Q_2:=;
 		ker_ext:= P_2 + c*Q_2;
@@ -64,12 +66,12 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		// find the order of the kernel generator
 		ker_ext_deg := Order(ker_ext);
 		
-	// compute the commitment extension
+		// compute the commitment extension
 		phi_ext := BigIsogeny(ker_ext, ker_ext_deg);
 		phi_ext_dual := dual_odd_isogeny(phi_ext, ker_ext);
-		phi_ext_I := isogeny_to_ideal_SQIAS(ker_ext,P_phi,Q_phi);
+		phi_ext_I := isogeny_to_ideal_SQIAS(ker_ext,P_2,Q_2);
 
-	// compute the challenge using the new commitment extension
+		// compute the challenge using the new commitment extension
 		phi_chall,chall,H_chall:=gen_honest_challenge_prover(phi_ext_dual,phi_ext_I,message);
 		challenge_time :=timediff(tt);
 	
@@ -105,13 +107,13 @@ sqi_presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon)
 		tao_P := Evaluate(phi_K, P_y);
 		tao_Q := Evaluate(phi_K, Q_y);
 
-	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tao_P, tao_Q, sign_ideal, sign_isogeny;
+	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), P_tao, Q_tao, sign_ideal;
 end function;
 
 // (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3
 
 
-
+// presig must include sign_ideal, P_tao, Q_tao
 sqi_adapt:=function(wit, presig)
 	order:=O0;
 	B<i,j,k>:=Parent(Basis(order)[1]);
@@ -120,7 +122,7 @@ sqi_adapt:=function(wit, presig)
 
 	// compute beta, using the witness
 	// determine kernel generator
-	ker_beta := tao_P + wit*tao_Q;
+	ker_beta := P_tao + wit*Q_tao;
 	// find order of kernel generator
 	deg_beta := Order(ker_beta);
 	//compute isogeny
@@ -130,8 +132,8 @@ sqi_adapt:=function(wit, presig)
 	beta_dual:=dual_odd_isogeny(beta, ker_beta);
 	
 	// compose presig ideal with beta dual ideal
-	P_2:=Evaluate(beta, tao_P);
-	Q_2:=Evaluate(beta, tao_Q);
+	P_2:=Evaluate(beta, P_tao);
+	Q_2:=Evaluate(beta, Q_tao);
 	beta_dual_I:= isogeny_to_ideal_SQIAS(beta_dual,P_2, Q_2);
 	
 	full_sig_I:= sign_ideal * beta_dual_I;
@@ -139,24 +141,27 @@ sqi_adapt:=function(wit, presig)
 // run KLPT on this ideal
 	equiv_I:=QuaternionIsogenyPath_special(order,w1,w2, full_sig_I, L?);
 // convert to isogeny, n is the power of 2 = norm of equiv_I
-	return full_sig := ideal_to_isogeny_2_simple(equiv_I,n?);
+// return basis generators
+	//full_sig := ideal_to_isogeny_2_simple(equiv_I,n?);
+	full_sig:= equiv_I;
+	
+	return full_sig, P_2, Q_2;
 
 end function;
 
 
-
-sqi_extract:= function(presig, sig)
+// presig must include sign_ideal, 
+// P_2 and Q_2 are the kernel generators of the domain of full_sig, these are provided in sqi_adapt
+// P_tao and Q_tao are the kernel generators of the domain of presig, these are provided in sqi_presign
+sqi_extract:= function(presig, full_sig, P_2, Q_2, P_tao, Q_tao)
 	order:=O0;
 	B<i,j,k>:=Parent(Basis(order)[1]);
 	w1 := i;
 	w2 := j;
 
-// compose presig ideal with sig dual ideal 
-	sig_dual:=dual_odd_isogeny(sig, gen?);
-	P_2:=;
-	Q_2:=;
-	sig_dual_I:=isogeny_to_ideal_SQIAS(sig_dual,P_2,Q_2);
-	start_I:= sig_dual_I * sign_ideal
+	// compose presig ideal with sig dual ideal 
+	//sig_I:=isogeny_to_ideal_SQIAS(sig,P_2,Q_2);
+	start_I:= Conjugate(full_sig) * sign_ideal;
 	
 // run KLPT to get single ideal back
 	end_I:=QuaternionIsogenyPath_special(order,w1,w2, start_I, L?);
@@ -164,7 +169,7 @@ sqi_extract:= function(presig, sig)
 // convert this to isogeny
 	wit_copy := ideal_to_isogeny_2_simple(end_I,n?);
 	
-	// from this extract the kernel generator and find the LC it is of tao_P and tao_Q
+	// from this extract the kernel generator and find the LC it is of P_tao and Q_tao
 	ker:= wit_copy`ker;
 	wit:=0;
 	repeat
@@ -174,15 +179,7 @@ sqi_extract:= function(presig, sig)
 	return wit;
 end function;
 
-// KLPT options:
 
-
-QuaternionIsogenyPath_special:=function(order,w1,w2, input_ideal, L)			// L=-1 : smooth, otherwise search for an ideal of prime power L*********
-
-	order:=O0;
-	B<i,j,k>:=Parent(Basis(order)[1]);
-	w1 := i;
-	w2 := j;
 
 
 
