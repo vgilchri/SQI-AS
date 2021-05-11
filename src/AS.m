@@ -4,7 +4,13 @@ load "src/sqisign.m";
 // generate hard relation from same base curve as sqisign: 
 // (witness, relation) = (y, [E_y, P_y, Q_y]: E_y = E_0 / <P_y + y Q_y>), degree power of 3 (hard coded for now)
 // look at how commitment is generated in sqisign.m and sidh
-hard_rel:=;
+
+// choose torsion generators, start with prders 2 and 5, then include them in the hard relation
+gens:=;
+// select witness, curve, and torsion generators for curve
+hard_pair:=;
+// evaluate secret witness at gens
+hard_gens:=;
 
 isogeny_to_ideal_SQIAS:=function(iso,P,Q);
 	// given only a prime-powered isogeny, return a corresponding ideal
@@ -180,8 +186,24 @@ sqi_extract:= function(presig, full_sig, P_2, Q_2, P_tao, Q_tao)
 end function;
 
 
+//test the above functions
+Test_sqiAS:=procedure()
+
+// choose hard relation
+	E_y, P_y, Q_y, hard_gens:=;
+
+// generate sqisign keys
+	sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
+	
+// call presign
+	commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,P_tao,Q_tao,sign_ideal:=sqi_presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon,hard_rel);
+	
+// verify presign
 
 
+// with hard relation and presig, adapt to full sig using sqi_adapt
+// using presig and full sig extract witness using sqi_extract
 
+end procedure;
 
 
