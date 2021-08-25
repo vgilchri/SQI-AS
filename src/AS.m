@@ -149,7 +149,8 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 end function;
 
 
-// adapt: (presig, y, P_Y, Q_Y, tau_P, tau_Q) --> (sig, pi_y2)
+// adapt: (presig_ideal, y, P_Y, Q_Y, tau_P, tau_Q) --> (sig, pi_y2)
+adapt:=function(presig_ideal,y,P_Y, Q_Y, tau_P, tau_Q);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
 	K:=y`ker;
@@ -159,25 +160,51 @@ end function;
 	// tau_P + s tau_Q <-- K'
 	K2 := tau_P+s*tau_Q;
 	// iso(K2) <-- y'
-	y2:=Isogeny(K2,deg,deg_bound);
-	// y' dual
-	y2_hat:=DualIsogeny(y2);
-	
+	y2:=Isogeny(K2,2^e,deg_bound);
+	// y' ideal
+	y2_ideal:=kernel_to_ideal_O0_prime_power(2,e,K2,tau_P,tau_Q);
 	// presig \circ y'_hat <-- sig
 	order:=O0;
 	B<i,j,k>:=Parent(Basis(order)[1]);
 	w1 := i;
 	w2 := j;	
 	equivalent_ideal:=small_equivalent_ideal(Conjugate(y2_ideal)*presig_ideal);
-	_,alpha:=LeftIsomorphism(J,presig_ideal);
+	_,alpha:=LeftIsomorphism(J,presig_ideal); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	sig_ideal:=QuaternionIsogenyPath_special_Extended2(order,w1,w2,equivalent_ideal,presig_ideal,2:addit_factor:=signing_odd_torsion);
 	sig_ideal:=cyclic_ideal(sig_ideal:full:=true);
-	sig_ideal:=sig_ideal*lideal<RightOrder(sign_ideal)|Conjugate(alpha)/Norm(alpha)>;
+	sig_ideal:=sig_ideal*lideal<RightOrder(sig_ideal)|Conjugate(alpha)/Norm(alpha)>;
 	sig_ideal:=rideal<LeftOrder(sig_ideal)|alpha>*sig_ideal;	
 	// return KLPT(sig)
+	return sig_ideal;
+end function;
 
 
-// extract: (presig, sig) --> (y)
+// extract: (presig_ideal, sig_ideal, P_Y, Q_Y, tau_P, tau_Q) --> (y)
+extract:=function();
+	// compose ideals and run KLPT
+	order:=O0;
+	B<i,j,k>:=Parent(Basis(order)[1]);
+	w1 := i;
+	w2 := j;	
+	equivalent_ideal:=small_equivalent_ideal(Conjugate(sig_ideal)*presig_ideal);
+	_,alpha:=LeftIsomorphism(J,presig_ideal); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	wit_ideal:=QuaternionIsogenyPath_special_Extended2(order,w1,w2,equivalent_ideal,presig_ideal,2:addit_factor:=signing_odd_torsion);
+	wit_ideal:=cyclic_ideal(wit_ideal:full:=true);
+	wit_ideal:=wit_ideal*lideal<RightOrder(wit_ideal)|Conjugate(alpha)/Norm(alpha)>;
+	wit_ideal:=rideal<LeftOrder(wit_ideal)|alpha>*wit_ideal;
+	// this gives y' ideal, find iso
+	y2,y2_isom:=ideal_to_isogeny_power_of_two(y2_ideal,J,K,phi_J,phi_K,isom_K,epsilon); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+	// find kernel generator
+	K2:=y2`ker;
+	// take discrete log with tau_P and tau_Q to find s
+	S:= K2-tau_P;
+	s:=Log(tau_Q, S);	
+	// use s to compute kernel generator of y
+	K:=P_Y + s*Q_Y;
+	// compute and return y
+	y:=Isogeny(K,2^e,deg_bound);	
+	return y;
+end function;
 
 // verify
 
