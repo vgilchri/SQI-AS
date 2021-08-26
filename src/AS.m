@@ -142,8 +142,8 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		if not ver then "problem with the verification"; end if;
 		verif_time:=timediff(tt);
 		
-		tao_P := Evaluate(phi_K, P_y);
-		tao_Q := Evaluate(phi_K, Q_y);
+		tau_P := Evaluate(phi_K, P_y);
+		tau_Q := Evaluate(phi_K, Q_y);
 
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q;
 end function;
