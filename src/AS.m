@@ -3,6 +3,9 @@ load "src/sqisign.m";
 
 // hard problem KeyGen / all KeyGen
 // generates: [y, (E_Y, P_Y, Q_Y, pi_Y)]
+// define degree sizes
+deg_bound:=;
+wit_deg:=;
 
 // generate commitment with E_Y hash
 sqi_gen_commitment_odd:=function(E_Y)
@@ -127,7 +130,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 
 		//computing the signature isogeny
 		tt:=ClockCycles();
-		sign_isogeny,sign_isom,_:=ideal_to_isogeny_power_of_two(sign_ideal,J,K,phi_J,phi_K,isom_K,epsilon:other_side_isogeny:=phi_commit cat phi_chall,other_side_ideal:=H_chall);
+		presign_isogeny,sign_isom,_:=ideal_to_isogeny_power_of_two(sign_ideal,J,K,phi_J,phi_K,isom_K,epsilon:other_side_isogeny:=phi_commit cat phi_chall,other_side_ideal:=H_chall);
 		 // sign_isogeny,sign_isom,_:=ideal_to_isogeny_power_of_two(J*sign_ideal,J,K,phi_J,phi_K,isom_K,epsilon);
 		 translate_time:=timediff(tt);
 		//normalizing and compressing
@@ -144,13 +147,14 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		
 		tau_P := Evaluate(phi_K, P_y);
 		tau_Q := Evaluate(phi_K, Q_y);
+		tau_deg:= phi_K`degree;
 
-	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q;
+	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
 
 
-// adapt: (presig_ideal, y, P_Y, Q_Y, tau_P, tau_Q) --> (sig, pi_y2)
-adapt:=function(presig_ideal,y,P_Y, Q_Y, tau_P, tau_Q);
+// adapt: (presig_iso, y, P_Y, Q_Y, tau_P, tau_Q) --> (sig, pi_y2)
+adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
 	K:=y`ker;
@@ -160,49 +164,32 @@ adapt:=function(presig_ideal,y,P_Y, Q_Y, tau_P, tau_Q);
 	// tau_P + s tau_Q <-- K'
 	K2 := tau_P+s*tau_Q;
 	// iso(K2) <-- y'
-	y2:=Isogeny(K2,2^e,deg_bound);
-	// y' ideal
-	y2_ideal:=kernel_to_ideal_O0_prime_power(2,e,K2,tau_P,tau_Q);
-	// presig \circ y'_hat <-- sig
-	order:=O0;
-	B<i,j,k>:=Parent(Basis(order)[1]);
-	w1 := i;
-	w2 := j;	
-	equivalent_ideal:=small_equivalent_ideal(Conjugate(y2_ideal)*presig_ideal);
-	_,alpha:=LeftIsomorphism(J,presig_ideal); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	sig_ideal:=QuaternionIsogenyPath_special_Extended2(order,w1,w2,equivalent_ideal,presig_ideal,2:addit_factor:=signing_odd_torsion);
-	sig_ideal:=cyclic_ideal(sig_ideal:full:=true);
-	sig_ideal:=sig_ideal*lideal<RightOrder(sig_ideal)|Conjugate(alpha)/Norm(alpha)>;
-	sig_ideal:=rideal<LeftOrder(sig_ideal)|alpha>*sig_ideal;	
-	// return KLPT(sig)
-	return sig_ideal;
+	y2_deg:=tau_deg * y`degree;
+	y2:=Isogeny(K2,y2_deg,deg_bound);
+// run sidh on presig and y' 
+	// compose kernel generator using s
+	K_R:=Evaluate(presign_isogeny, K2);
+	// define iso
+	sig_deg:=presign_isogeny`degree * y2_deg;
+	sig:=Isogeny(K_R,sig_deg,deg_bound);
+	return sig;
 end function;
 
 
-// extract: (presig_ideal, sig_ideal, P_Y, Q_Y, tau_P, tau_Q) --> (y)
+// extract: (presign_isogeny, sig, P_Y, Q_Y, tau_P, tau_Q) --> (y)
 extract:=function();
-	// compose ideals and run KLPT
-	order:=O0;
-	B<i,j,k>:=Parent(Basis(order)[1]);
-	w1 := i;
-	w2 := j;	
-	equivalent_ideal:=small_equivalent_ideal(Conjugate(sig_ideal)*presig_ideal);
-	_,alpha:=LeftIsomorphism(J,presig_ideal); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	wit_ideal:=QuaternionIsogenyPath_special_Extended2(order,w1,w2,equivalent_ideal,presig_ideal,2:addit_factor:=signing_odd_torsion);
-	wit_ideal:=cyclic_ideal(wit_ideal:full:=true);
-	wit_ideal:=wit_ideal*lideal<RightOrder(wit_ideal)|Conjugate(alpha)/Norm(alpha)>;
-	wit_ideal:=rideal<LeftOrder(wit_ideal)|alpha>*wit_ideal;
-	// this gives y' ideal, find iso
-	y2,y2_isom:=ideal_to_isogeny_power_of_two(y2_ideal,J,K,phi_J,phi_K,isom_K,epsilon); // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	// find kernel generator
-	K2:=y2`ker;
-	// take discrete log with tau_P and tau_Q to find s
-	S:= K2-tau_P;
-	s:=Log(tau_Q, S);	
-	// use s to compute kernel generator of y
-	K:=P_Y + s*Q_Y;
-	// compute and return y
-	y:=Isogeny(K,2^e,deg_bound);	
+	// find kernel generator of sig 
+	K_R := sig`ker;
+	// compute presig hat
+	presig_hat:=DualIsogeny(presign_isogeny);
+	// run sidh on sig and presig hat
+	K_Y:=Evaluate(presig_hat,K_R);
+	// obtain secret int s
+	R_Y:= = K_Y-tau_P;
+	s:=Log(tau_Q, R_Y);
+	// define witness with new kernel
+	S:=P_Y + s*Q_Y;
+	y:=Isogeny(S, wit_deg,deg_bound);
 	return y;
 end function;
 
