@@ -4,8 +4,56 @@ load "src/sqisign.m";
 // hard problem KeyGen / all KeyGen
 // generates: [y, (E_Y, P_Y, Q_Y, pi_Y)]
 // define degree sizes
-deg_bound:=;
-wit_deg:=;
+// deg_bound:=;
+wit_deg:=5^21;
+// to find basis points for statement
+basis_of_power_of_5_torsion := function(E);
+	M:=SemiMontgomery(E);
+	n := 5^21;
+	// cofactor:=(p+1) div 5^(n+1);
+	repeat
+		B1 := cofactor*Random(M);
+		B12n:=B1*5^(n);
+	until not IsIdentity(B12n) and IsIdentity(B12n*2);
+
+	repeat
+		B2 := cofactor*Random(M);
+		B22n:=B2*5^(n);
+	until (not IsIdentity(B22n) and IsIdentity(B22n*5)) and (not (B12n eq B22n));
+	return [M!(5*B1),M!(5*B2)];
+end function;
+
+// generate statement, witness pair and torsion basis points
+sqias_witness_gen:=function()
+	B<i,j,k>:=Parent(Basis(O0)[1]);
+
+	n := exponent_power_of_2_rational_torsion;
+
+	T := available_odd_torsion;
+	T2 := T^2;
+	fT2 := Factorisation(T2);
+	cof:=(p+1) div 5^21;
+	cof_twist:=(p-1) div 3^53;
+	M:=E0;
+	repeat
+		ker:=RandomXZ(M,true)*cof;
+		ker5:=5^20*ker;
+	until IsIdentity(5*ker5) and not IsIdentity(ker5);
+	repeat
+		ker_twist:=RandomXZ(M,false)*cof_twist;
+		ker3_twist:=3^52*ker_twist;
+	until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
+	gen:=< <ker,5^21,[<5,21>] >,<ker_twist,3^53,[<3,53>]> >;
+	assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
+	wit:=list_kernel_generators_to_isogeny(gen);
+	statement:=codomain(wit[#wit]);
+	gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
+	assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
+	assert Norm(H) eq Norm(H1)*Norm(H2);
+	basis5:=basis_of_power_of_5_torsion(statement);
+	
+	return wit,statement,basis5[1],basis5[2];
+end function;
 
 // generate commitment with E_Y hash
 sqi_gen_commitment_odd:=function(E_Y)
@@ -196,3 +244,61 @@ end function;
 // verify
 
 end procedure;
+
+Test_sqias:=procedure()
+	order:=O0;
+	B<i,j,k>:=Parent(Basis(order)[1]);
+	w1 := i;
+	w2 := j;
+	epsilon:=14;
+	number_batch:=1;
+	number_round:=1;
+	sign_times:=[];
+	klpt_times:=[];
+	commit_times:=[];
+	challenge_times:=[];
+	translate_times:=[];
+	gen_times:=[];
+	times_not_sorted:=[];
+	sizes:=[];
+	verif_times:=[];
+	//generate the key
+
+		"\n Test_sqisign \n number of batches:",number_batch," number of rounds:",number_round," \n";
+	for index in [1..number_batch] do
+		t:=ClockCycles();
+		sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
+		gen_time:=timediff(t);
+		gen_times:=sort_insert(gen_times,gen_time);
+		for ind in [1..number_round] do
+			t:=ClockCycles();
+			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen();
+			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
+			commit_times:=sort_insert(commit_times,commit_time);
+			challenge_times:=sort_insert(challenge_times,challenge_time);
+			klpt_times:=sort_insert(klpt_times,klpt_time);
+			translate_times:=sort_insert(translate_times,translate_time);
+			sign_times:=sort_insert(sign_times,sign_time);
+			verif_times:=sort_insert(verif_times,verif_time);
+			Append(~times_not_sorted,sign_time);
+			Append(~sizes,size);
+		end for;
+	end for;
+
+
+
+	"median generation time is ",gen_times[#gen_times div 2 +1];
+	"median signing time for epsilon = ",epsilon," is ",sign_times[#sign_times div 2 +1];
+	"median verification time is", verif_times[#verif_times div 2+1];
+	"median commit time is", commit_times[#commit_times div 2+1];
+	"median challenge time is", challenge_times[#challenge_times div 2+1];
+	"median klpt time is", klpt_times[#klpt_times div 2+1];
+	"median translate time is", translate_times[#translate_times div 2+1];
+
+	gen_times;
+	sign_times;
+	verif_times;
+	sizes;
+end procedure;
+
+Test_sqias();
