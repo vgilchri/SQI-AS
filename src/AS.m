@@ -303,7 +303,6 @@ Test_sqias:=procedure()
 	sign_times;
 	verif_times;
 	sizes;
-	
 end procedure;
 
 Test_sqias();
