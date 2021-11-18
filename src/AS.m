@@ -47,8 +47,8 @@ sqias_witness_gen:=function()
 	assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
 	wit:=list_kernel_generators_to_isogeny(gen);
 	statement:=codomain(wit[#wit]);
-	gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
-	assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
+	// gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
+	// assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
 	assert Norm(H) eq Norm(H1)*Norm(H2);
 	basis5:=basis_of_power_of_5_torsion(statement);
 	
@@ -182,7 +182,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		 // sign_isogeny,sign_isom,_:=ideal_to_isogeny_power_of_two(J*sign_ideal,J,K,phi_J,phi_K,isom_K,epsilon);
 		 translate_time:=timediff(tt);
 		//normalizing and compressing
-		walk, zip, last_step,len:=normalized_two_walk(sign_isogeny,sign_isom);
+		walk, zip, last_step,len:=normalized_two_walk(presign_isogeny,sign_isom);
 		sign_time:=timediff(t);
 
 
@@ -202,7 +202,7 @@ end function;
 
 
 // adapt: (presig_iso, y, P_Y, Q_Y, tau_P, tau_Q) --> (sig, pi_y2)
-adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q);
+adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
 	K:=y`ker;
@@ -233,7 +233,7 @@ extract:=function();
 	// run sidh on sig and presig hat
 	K_Y:=Evaluate(presig_hat,K_R);
 	// obtain secret int s
-	R_Y:= = K_Y-tau_P;
+	R_Y:= K_Y-tau_P;
 	s:=Log(tau_Q, R_Y);
 	// define witness with new kernel
 	S:=P_Y + s*Q_Y;
