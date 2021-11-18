@@ -241,9 +241,7 @@ extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	return y;
 end function;
 
-// verify
 
-end procedure;
 
 Test_sqias:=procedure()
 	order:=O0;
