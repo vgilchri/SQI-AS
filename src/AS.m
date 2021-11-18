@@ -276,8 +276,8 @@ Test_sqias:=procedure()
 			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
 			sig:=adapt(presign_isogeny,wit,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 			y:=extract(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
-			printf "y";
-			printf "wit";
+			"extracted witness is",y;
+			"original witness is",wit;
 			commit_times:=sort_insert(commit_times,commit_time);
 			challenge_times:=sort_insert(challenge_times,challenge_time);
 			klpt_times:=sort_insert(klpt_times,klpt_time);
@@ -291,7 +291,7 @@ Test_sqias:=procedure()
 
 
 
-	"median generation time is ",gen_times[#gen_times div 2 +1];
+	"median generation time is is ",gen_times[#gen_times div 2 +1];
 	"median signing time for epsilon = ",epsilon," is ",sign_times[#sign_times div 2 +1];
 	"median verification time is", verif_times[#verif_times div 2+1];
 	"median commit time is", commit_times[#commit_times div 2+1];
