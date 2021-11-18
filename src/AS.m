@@ -4,7 +4,7 @@ load "src/sqisign.m";
 // hard problem KeyGen / all KeyGen
 // generates: [y, (E_Y, P_Y, Q_Y, pi_Y)]
 // define degree sizes
-// deg_bound:=;
+deg_bound:=120;
 wit_deg:=5^21;
 // to find basis points for statement
 basis_of_power_of_5_torsion := function(E);
@@ -49,7 +49,7 @@ sqias_witness_gen:=function()
 	statement:=codomain(wit[#wit]);
 	// gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
 	// assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
-	assert Norm(H) eq Norm(H1)*Norm(H2);
+	// assert Norm(H) eq Norm(H1)*Norm(H2);
 	basis5:=basis_of_power_of_5_torsion(statement);
 	
 	return wit,statement,basis5[1],basis5[2];
@@ -193,8 +193,8 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		if not ver then "problem with the verification"; end if;
 		verif_time:=timediff(tt);
 		
-		tau_P := Evaluate(phi_K, P_y);
-		tau_Q := Evaluate(phi_K, Q_y);
+		tau_P := Evaluate(phi_K, P_Y);
+		tau_Q := Evaluate(phi_K, Q_Y);
 		tau_deg:= phi_K`degree;
 
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
@@ -303,6 +303,7 @@ Test_sqias:=procedure()
 	sign_times;
 	verif_times;
 	sizes;
+	
 end procedure;
 
 Test_sqias();
