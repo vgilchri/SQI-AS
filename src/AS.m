@@ -225,7 +225,7 @@ end function;
 
 
 // extract: (presign_isogeny, sig, P_Y, Q_Y, tau_P, tau_Q) --> (y)
-extract:=function();
+extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	// find kernel generator of sig 
 	K_R := sig`ker;
 	// compute presig hat
@@ -274,6 +274,10 @@ Test_sqias:=procedure()
 			t:=ClockCycles();
 			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen();
 			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
+			sig:=adapt(presign_isogeny,wit,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
+			y:=extract(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
+			printf "y";
+			printf "wit";
 			commit_times:=sort_insert(commit_times,commit_time);
 			challenge_times:=sort_insert(challenge_times,challenge_time);
 			klpt_times:=sort_insert(klpt_times,klpt_time);
