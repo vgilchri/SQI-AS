@@ -270,7 +270,7 @@ Test_sqias:=procedure()
 		gen_times:=sort_insert(gen_times,gen_time);
 		for ind in [1..number_round] do
 			t:=ClockCycles();
-			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen(phi_K[#phi_K]);
+			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen(domain(phi_K[#phi_K]));
 			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
 			sig:=adapt(presign_isogeny,wit,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 			y:=extract(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
