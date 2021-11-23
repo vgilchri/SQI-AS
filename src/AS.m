@@ -24,7 +24,7 @@ basis_of_power_of_5_torsion := function(E);
 end function;
 
 // generate statement, witness pair and torsion basis points
-sqias_witness_gen:=function()
+sqias_witness_gen:=function(M)
 	B<i,j,k>:=Parent(Basis(O0)[1]);
 
 	n := exponent_power_of_2_rational_torsion;
@@ -34,7 +34,7 @@ sqias_witness_gen:=function()
 	fT2 := Factorisation(T2);
 	cof:=(p+1) div 5^21;
 	cof_twist:=(p-1) div 3^53;
-	M:=E0;
+	//M:=E0;
 	repeat
 		ker:=RandomXZ(M,true)*cof;
 		ker5:=5^20*ker;
@@ -270,7 +270,7 @@ Test_sqias:=procedure()
 		gen_times:=sort_insert(gen_times,gen_time);
 		for ind in [1..number_round] do
 			t:=ClockCycles();
-			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen();
+			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen(phi_K[#phi_K]);
 			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
 			sig:=adapt(presign_isogeny,wit,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 			y:=extract(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
