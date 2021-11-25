@@ -10,7 +10,7 @@ wit_deg:=5^21;
 basis_of_power_of_5_torsion := function(E);
 	M:=SemiMontgomery(E);
 	n := 21;
-	// cofactor:=(p+1) div 5^(n+1);
+	cofactor:=(p+1) div 5^(n+1);
 	cofactor;
 	"begin loop 3";
 	repeat
