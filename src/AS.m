@@ -11,20 +11,23 @@ basis_of_power_of_5_torsion := function(E);
 	M:=SemiMontgomery(E);
 	n := 21;
 	// cofactor:=(p+1) div 5^(n+1);
+	"begin loop 3";
 	repeat
 		B1 := cofactor*Random(M);
 		B12n:=B1*5^(n);
 	until not IsIdentity(B12n) and IsIdentity(B12n*2);
-
+	"loop 3 done, begin loop 4";
 	repeat
 		B2 := cofactor*Random(M);
 		B22n:=B2*5^(n);
 	until (not IsIdentity(B22n) and IsIdentity(B22n*5)) and (not (B12n eq B22n));
+	"loop 4 done";
 	return [M!(5*B1),M!(5*B2)];
 end function;
 
 // generate statement, witness pair and torsion basis points
 sqias_witness_gen:=function()
+	"entering wit gen fn";
 	B<i,j,k>:=Parent(Basis(O0)[1]);
 
 	n := exponent_power_of_2_rational_torsion;
@@ -35,14 +38,17 @@ sqias_witness_gen:=function()
 	cof:=(p+1) div 5^21;
 	cof_twist:=(p-1) div 3^53;
 	M:=SemiMontgomery(E0);
+	"start loop1"'
 	repeat
 		ker:=RandomXZ(M,true)*cof;
 		ker5:=5^20*ker;
 	until IsIdentity(5*ker5) and not IsIdentity(ker5);
+	"loop 1 done, start loop 2";
 	repeat
 		ker_twist:=RandomXZ(M,false)*cof_twist;
 		ker3_twist:=3^52*ker_twist;
 	until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
+	"loop 2 done";
 	gen:=< <ker,5^21,[<5,21>] >,<ker_twist,3^53,[<3,53>]> >;
 	assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
 	wit:=list_kernel_generators_to_isogeny(gen);
@@ -50,8 +56,9 @@ sqias_witness_gen:=function()
 	// gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
 	// assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
 	// assert Norm(H) eq Norm(H1)*Norm(H2);
+	"compute basis";
 	basis5:=basis_of_power_of_5_torsion(statement);
-	
+	"basis done";
 	return wit,statement,basis5[1],basis5[2];
 end function;
 
