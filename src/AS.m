@@ -244,6 +244,7 @@ end function;
 
 
 Test_sqias:=procedure()
+	"testing SQI-AS";
 	order:=O0;
 	B<i,j,k>:=Parent(Basis(order)[1]);
 	w1 := i;
@@ -260,9 +261,10 @@ Test_sqias:=procedure()
 	times_not_sorted:=[];
 	sizes:=[];
 	verif_times:=[];
+	"about to gen keys";
 	//generate the key
 
-		"\n Test_sqisign \n number of batches:",number_batch," number of rounds:",number_round," \n";
+		//"\n Test_sqisign \n number of batches:",number_batch," number of rounds:",number_round," \n";
 	for index in [1..number_batch] do
 		t:=ClockCycles();
 		sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
@@ -271,9 +273,13 @@ Test_sqias:=procedure()
 		for ind in [1..number_round] do
 			t:=ClockCycles();
 			// domain(phi_K[#phi_K])
+			"about to gen witness";
 			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen();
+			"witness gen done";
 			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
+			"key gen done, about to sign";
 			sig:=adapt(presign_isogeny,wit,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
+			"sign done, about to extract";
 			y:=extract(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 			"extracted witness is",y;
 			"original witness is",wit;
@@ -290,13 +296,13 @@ Test_sqias:=procedure()
 
 
 
-	"median generation time is is ",gen_times[#gen_times div 2 +1];
-	"median signing time for epsilon = ",epsilon," is ",sign_times[#sign_times div 2 +1];
-	"median verification time is", verif_times[#verif_times div 2+1];
-	"median commit time is", commit_times[#commit_times div 2+1];
-	"median challenge time is", challenge_times[#challenge_times div 2+1];
-	"median klpt time is", klpt_times[#klpt_times div 2+1];
-	"median translate time is", translate_times[#translate_times div 2+1];
+	//"median generation time is is ",gen_times[#gen_times div 2 +1];
+	//"median signing time for epsilon = ",epsilon," is ",sign_times[#sign_times div 2 +1];
+	//"median verification time is", verif_times[#verif_times div 2+1];
+	//"median commit time is", commit_times[#commit_times div 2+1];
+	//"median challenge time is", challenge_times[#challenge_times div 2+1];
+	//"median klpt time is", klpt_times[#klpt_times div 2+1];
+	//"median translate time is", translate_times[#translate_times div 2+1];
 
 	gen_times;
 	sign_times;
