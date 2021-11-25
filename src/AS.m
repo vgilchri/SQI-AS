@@ -16,7 +16,7 @@ basis_of_power_of_5_torsion := function(E);
 	repeat
 		B1 := cofactor*Random(M);
 		B12n:=B1*5^(n);
-	until not IsIdentity(B12n) and IsIdentity(B12n*2);
+	until not IsIdentity(B12n) and IsIdentity(B12n*5);
 	"loop 3 done, begin loop 4";
 	repeat
 		B2 := cofactor*Random(M);
