@@ -38,7 +38,7 @@ sqias_witness_gen:=function()
 	cof:=(p+1) div 5^21;
 	cof_twist:=(p-1) div 3^53;
 	M:=SemiMontgomery(E0);
-	"start loop1"'
+	"start loop1";
 	repeat
 		ker:=RandomXZ(M,true)*cof;
 		ker5:=5^20*ker;
