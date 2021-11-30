@@ -203,6 +203,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 	until counter = #phi_K ;
 	
 		tau_deg:= phi_K`degree;
+		"presign done";
 
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
