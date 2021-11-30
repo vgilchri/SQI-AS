@@ -5,13 +5,13 @@ load "src/sqisign.m";
 // generates: [y, (E_Y, P_Y, Q_Y, pi_Y)]
 // define degree sizes
 deg_bound:=120;
-wit_deg:=5^21;
+wit_deg:=5^16;
 // to find basis points for statement
 basis_of_power_of_5_torsion := function(E);
 	M:=SemiMontgomery(E);
-	n := 21;
+	n := 16;
+	// n := 21;
 	cofactor:=(p+1) div 5^(n+1);
-	cofactor;
 	"begin loop 3";
 	repeat
 		B1 := cofactor*Random(M);
