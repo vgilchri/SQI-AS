@@ -109,7 +109,7 @@ sqi_gen_commitment_odd:=function(E_Y)
 			end if;
 		end if;
 	end for;
-	monty_coef :=Integers()!(E_Y`A);
+	monty_coef :=Integers()!Norm(E_Y`A);
 	statement_seed:= monty_coef mod (2^(32) - 1);
 	SetSeed(statement_seed);
 	h:= Random(100000); // not sure how large need to make this...check against a cryptographic hash
