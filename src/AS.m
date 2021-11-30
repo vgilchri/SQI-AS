@@ -12,23 +12,19 @@ basis_of_power_of_5_torsion := function(E);
 	n := 16;
 	// n := 21;
 	cofactor:=(p+1) div 5^(n+1);
-	"begin loop 3";
 	repeat
 		B1 := cofactor*Random(M);
 		B12n:=B1*5^(n);
 	until not IsIdentity(B12n) and IsIdentity(B12n*5);
-	"loop 3 done, begin loop 4";
 	repeat
 		B2 := cofactor*Random(M);
 		B22n:=B2*5^(n);
 	until (not IsIdentity(B22n) and IsIdentity(B22n*5)) and (not (B12n eq B22n));
-	"loop 4 done";
 	return [M!(5*B1),M!(5*B2)];
 end function;
 
 // generate statement, witness pair and torsion basis points
 sqias_witness_gen:=function()
-	"entering wit gen fn";
 	B<i,j,k>:=Parent(Basis(O0)[1]);
 
 	n := exponent_power_of_2_rational_torsion;
@@ -39,17 +35,14 @@ sqias_witness_gen:=function()
 	cof:=(p+1) div 5^21;
 	cof_twist:=(p-1) div 3^53;
 	M:=SemiMontgomery(E0);
-	"start loop1";
 	repeat
 		ker:=RandomXZ(M,true)*cof;
 		ker5:=5^20*ker;
 	until IsIdentity(5*ker5) and not IsIdentity(ker5);
-	"loop 1 done, start loop 2";
 	repeat
 		ker_twist:=RandomXZ(M,false)*cof_twist;
 		ker3_twist:=3^52*ker_twist;
 	until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
-	"loop 2 done";
 	gen:=< <ker,5^21,[<5,21>] >,<ker_twist,3^53,[<3,53>]> >;
 	assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
 	wit:=list_kernel_generators_to_isogeny(gen);
@@ -57,9 +50,7 @@ sqias_witness_gen:=function()
 	// gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
 	// assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
 	// assert Norm(H) eq Norm(H1)*Norm(H2);
-	"compute basis";
 	basis5:=basis_of_power_of_5_torsion(statement);
-	"basis done";
 	return wit,statement,basis5[1],basis5[2];
 end function;
 
@@ -203,8 +194,14 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		if not ver then "problem with the verification"; end if;
 		verif_time:=timediff(tt);
 		
-		tau_P := Evaluate(phi_K, P_Y);
-		tau_Q := Evaluate(phi_K, Q_Y);
+		tau_P := Evaluate(phi_K[1], P_Y);
+		tau_Q := Evaluate(phi_K[1], Q_Y);
+		counter:=1;
+		repeat
+		tau_P:=Evaluate(phi_K[counter], tau_P);
+		tau_Q:=Evaluate(phi_K[counter], tau_Q);
+	until counter = #phi_K ;
+	
 		tau_deg:= phi_K`degree;
 
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
@@ -285,7 +282,7 @@ Test_sqias:=procedure()
 			// domain(phi_K[#phi_K])
 			"about to gen witness";
 			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen();
-			"witness gen done";
+			"witness gen done, starting key gen";
 			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
 			"key gen done, about to sign";
 			sig:=adapt(presign_isogeny,wit,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
