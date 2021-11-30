@@ -194,14 +194,15 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		if not ver then "problem with the verification"; end if;
 		verif_time:=timediff(tt);
 		
-		tau_P := Evaluate(phi_K[1], P_Y);
-		tau_Q := Evaluate(phi_K[1], Q_Y);
+		tau_P := Evaluate(phi_K[1], [P_Y])[1];
+		tau_Q := Evaluate(phi_K[1], [Q_Y])[1];
 		counter:=1;
+		"starting chain of evals";
 		repeat
-		tau_P:=Evaluate(phi_K[counter], tau_P);
-		tau_Q:=Evaluate(phi_K[counter], tau_Q);
+		tau_P:=Evaluate(phi_K[counter], [tau_P])[1];
+		tau_Q:=Evaluate(phi_K[counter], [tau_Q])[1];
 	until counter = #phi_K ;
-	
+		"chain done";
 		tau_deg:= phi_K`degree;
 		"presign done";
 
@@ -273,7 +274,7 @@ Test_sqias:=procedure()
 	//generate the key
 
 		//"\n Test_sqisign \n number of batches:",number_batch," number of rounds:",number_round," \n";
-	for index in [1..number_batch] do
+	//for index in [1..number_batch] do
 		t:=ClockCycles();
 		sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
 		gen_time:=timediff(t);
@@ -300,7 +301,7 @@ Test_sqias:=procedure()
 			Append(~times_not_sorted,sign_time);
 			Append(~sizes,size);
 		end for;
-	end for;
+	//end for;
 
 
 
