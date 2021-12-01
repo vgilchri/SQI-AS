@@ -188,23 +188,25 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 
 
 		//computing the verification
-		tt:=ClockCycles();
-		ver:=verify(commitment,message,zip,pk,len,last_step);
-		assert(ver);
-		if not ver then "problem with the verification"; end if;
-		verif_time:=timediff(tt);
+		//tt:=ClockCycles();
+		//ver:=verify(commitment,message,zip,pk,len,last_step);
+		//assert(ver);
+		//if not ver then "problem with the verification"; end if;
+		//verif_time:=timediff(tt);
 		
 		tau_P := Evaluate(phi_K[1], [P_Y])[1];
 		tau_Q := Evaluate(phi_K[1], [Q_Y])[1];
 		counter:=1;
+		tau_deg:= phi_K[1]`degree;
 		"starting chain of evals";
 		repeat
 			tau_P:=Evaluate(phi_K[counter], [tau_P])[1];
 			tau_Q:=Evaluate(phi_K[counter], [tau_Q])[1];
+			tau_deg*:=phi_K[counter]`degree;
 			counter+:=1;
 		until counter eq (#phi_K +1);
 		"chain done";
-		tau_deg:= phi_K`degree;
+		
 		"presign done";
 
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
