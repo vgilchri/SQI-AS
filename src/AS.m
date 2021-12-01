@@ -39,16 +39,16 @@ sqias_witness_gen:=function()
 		ker:=RandomXZ(M,true)*cof;
 		ker5:=5^15*ker;
 	until IsIdentity(5*ker5) and not IsIdentity(ker5);
-	//repeat
-		//ker_twist:=RandomXZ(M,false)*cof_twist;
-		//ker3_twist:=3^52*ker_twist;
-	//until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
+	repeat
+		ker_twist:=RandomXZ(M,false)*cof_twist;
+		ker3_twist:=3^52*ker_twist;
+	until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
 	gen:=<ker,5^16,[<5,16>] >;
-	//assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
+	assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
 	wit:=list_kernel_generators_to_isogeny(gen);
 	statement:=codomain(wit[#wit]);
 	// gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
-	// assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
+	assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
 	// assert Norm(H) eq Norm(H1)*Norm(H2);
 	basis5:=basis_of_power_of_5_torsion(statement);
 	return wit,statement,basis5[1],basis5[2];
