@@ -201,8 +201,8 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		repeat
 			tau_P:=Evaluate(phi_K[counter], [tau_P])[1];
 			tau_Q:=Evaluate(phi_K[counter], [tau_Q])[1];
-			counter:=counter+1;
-		until counter = #phi_K +1;
+			counter+:=1;
+		until counter eq (#phi_K +1);
 		"chain done";
 		tau_deg:= phi_K`degree;
 		"presign done";
