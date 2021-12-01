@@ -32,18 +32,18 @@ sqias_witness_gen:=function()
 	T := available_odd_torsion;
 	T2 := T^2;
 	fT2 := Factorisation(T2);
-	cof:=(p+1) div 5^21;
+	cof:=(p+1) div 5^16;
 	cof_twist:=(p-1) div 3^53;
 	M:=SemiMontgomery(E0);
 	repeat
 		ker:=RandomXZ(M,true)*cof;
-		ker5:=5^20*ker;
+		ker5:=5^15*ker;
 	until IsIdentity(5*ker5) and not IsIdentity(ker5);
-	repeat
-		ker_twist:=RandomXZ(M,false)*cof_twist;
-		ker3_twist:=3^52*ker_twist;
-	until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
-	gen:=< <ker,5^21,[<5,21>] >,<ker_twist,3^53,[<3,53>]> >;
+	//repeat
+		//ker_twist:=RandomXZ(M,false)*cof_twist;
+		//ker3_twist:=3^52*ker_twist;
+	//until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
+	gen:=<ker,5^16,[<5,16>] >;
 	assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
 	wit:=list_kernel_generators_to_isogeny(gen);
 	statement:=codomain(wit[#wit]);
@@ -198,15 +198,12 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		tau_Q := Evaluate(phi_K[1], [Q_Y])[1];
 		counter:=1;
 		tau_deg:= phi_K[1]`degree;
-		"starting chain of evals";
 		repeat
 			tau_P:=Evaluate(phi_K[counter], [tau_P])[1];
 			tau_Q:=Evaluate(phi_K[counter], [tau_Q])[1];
 			tau_deg*:=phi_K[counter]`degree;
 			counter+:=1;
 		until counter eq (#phi_K +1);
-		"chain done";
-		
 		"presign done";
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
