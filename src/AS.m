@@ -48,7 +48,7 @@ sqias_witness_gen:=function()
 	wit:=list_kernel_generators_to_isogeny(gen);
 	statement:=codomain(wit[#wit]);
 	// gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
-	assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
+	//assert <IsIdentity(gene[2]*gene[1]): gene in gen0> eq <true,true>;
 	// assert Norm(H) eq Norm(H1)*Norm(H2);
 	basis5:=basis_of_power_of_5_torsion(statement);
 	return wit,statement,basis5[1],basis5[2];
