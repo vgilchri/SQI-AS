@@ -188,11 +188,11 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 
 
 		//computing the verification
-		//tt:=ClockCycles();
-		//ver:=verify(commitment,message,zip,pk,len,last_step);
-		//assert(ver);
-		//if not ver then "problem with the verification"; end if;
-		//verif_time:=timediff(tt);
+		tt:=ClockCycles();
+		ver:=verify(commitment,message,zip,pk,len,last_step);
+		assert(ver);
+		if not ver then "problem with the verification"; end if;
+		verif_time:=timediff(tt);
 		
 		tau_P := Evaluate(phi_K[1], [P_Y])[1];
 		tau_Q := Evaluate(phi_K[1], [Q_Y])[1];
@@ -208,8 +208,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		"chain done";
 		
 		"presign done";
-	// not return verif_time for now
-	return commit_time,challenge_time,klpt_time,translate_time,sign_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
+	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
 
 
@@ -288,8 +287,7 @@ Test_sqias:=procedure()
 			"about to gen witness";
 			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen();
 			"witness gen done, starting key gen";
-			// not returning verif_time for now
-			commit_time,challenge_time,klpt_time,translate_time,sign_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
+			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
 			"key gen done, about to sign";
 			sig:=adapt(presign_isogeny,wit,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 			"sign done, about to extract";
