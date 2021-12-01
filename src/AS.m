@@ -44,7 +44,7 @@ sqias_witness_gen:=function()
 		ker3_twist:=3^52*ker_twist;
 	until IsIdentity(3*ker3_twist) and not IsIdentity(ker3_twist);
 	gen:=<ker,5^16,[<5,16>] >;
-	assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
+	//assert <IsIdentity(gene[2]*gene[1]): gene in gen> eq <true,true>;
 	wit:=list_kernel_generators_to_isogeny(gen);
 	statement:=codomain(wit[#wit]);
 	// gen0:=<<eval_isogenies(gene[1],phi_commit_dual),gene[2]> : gene in gen>;
