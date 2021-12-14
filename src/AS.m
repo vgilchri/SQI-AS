@@ -54,6 +54,10 @@ sqias_witness_gen:=function()
 	return wit,statement,basis5[1],basis5[2];
 end function;
 
+sqias_witness_gen2:=function();
+	
+end function; 
+
 // generate commitment with E_Y hash
 sqi_gen_commitment_odd:=function(E_Y)
 	M1 := Matrix([[1,0],[0,1]]);
