@@ -54,8 +54,17 @@ sqias_witness_gen:=function()
 	return wit,statement,basis5[1],basis5[2];
 end function;
 
-sqias_witness_gen2:=function();
-	
+sqias_witness_gen2:=function()
+	base_curve:=SemiMontgomery(E0);
+	basis5:=basis_of_power_of_5_torsion(base_curve);
+	P_Y, Q_Y :=basis5[1], basis5[2];
+	secret:=Random(5^16);
+	wit_ker:=P_Y + (secret * Q_Y);
+	ell:= 5^16;
+	degree_bound:= 5^21;
+	wit:=Isogeny(wit_ker, ell, degree_bound);
+	statement:= codomain(wit);
+	return wit, statement, P_Y, Q_Y;
 end function; 
 
 // generate commitment with E_Y hash
