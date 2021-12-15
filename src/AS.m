@@ -59,13 +59,17 @@ sqias_witness_gen2:=function()
 	basis5:=basis_of_power_of_5_torsion(base_curve);
 	P_Y :=basis5[1];
 	Q_Y := basis5[2];
+	"basis done";
 	secret:=Random(5^16);
 	temp:=(secret * Q_Y);
 	wit_ker:=XAdd(P_Y , temp, P_Y);
+	"kernel computed";
 	ell:= 5^16;
 	degree_bound:= 5^21;
 	wit:=Isogeny(wit_ker, ell, degree_bound);
+	"defined witness";
 	statement:= codomain(wit);
+	"defined statement";
 	return wit, statement, P_Y, Q_Y;
 end function; 
 
