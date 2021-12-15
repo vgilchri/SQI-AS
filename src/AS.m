@@ -295,7 +295,7 @@ Test_sqias:=procedure()
 			t:=ClockCycles();
 			// domain(phi_K[#phi_K])
 			"about to gen witness";
-			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen();
+			wit, E_Y, P_Y, Q_Y:=sqias_witness_gen2();
 			"witness gen done, starting key gen";
 			commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,size,tau_P,tau_Q,presign_isogeny,tau_deg:=presign(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y,P_Y, Q_Y);
 			"key gen done, about to sign";
