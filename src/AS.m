@@ -232,12 +232,12 @@ end function;
 adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
-	K:=y`ker;
+	K:=y`kernel_points[1];
 	// discrete log of K in terms of P_Y, Q_Y <-- s
-	S:= K-P_Y;
+	S:= XAdd(K, (-1*P_Y), K);
 	s:=Log(Q_Y, S);
 	// tau_P + s tau_Q <-- K'
-	K2 := tau_P+s*tau_Q;
+	K2 := XAdd(tau_P, (s*tau_Q), tau_Q);
 	// iso(K2) <-- y'
 	y2_deg:=tau_deg * y`degree;
 	y2:=Isogeny(K2,y2_deg,deg_bound);
@@ -254,16 +254,16 @@ end function;
 // extract: (presign_isogeny, sig, P_Y, Q_Y, tau_P, tau_Q) --> (y)
 extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	// find kernel generator of sig 
-	K_R := sig`ker;
+	K_R := sig`kernel_points[1];
 	// compute presig hat
 	presig_hat:=DualIsogeny(presign_isogeny);
 	// run sidh on sig and presig hat
 	K_Y:=Evaluate(presig_hat,K_R);
 	// obtain secret int s
-	R_Y:= K_Y-tau_P;
+	R_Y:= XAdd(K_Y,(-1*tau_P),K_Y);
 	s:=Log(tau_Q, R_Y);
 	// define witness with new kernel
-	S:=P_Y + s*Q_Y;
+	S:=XAdd(P_Y, ( s*Q_Y),P_Y);
 	y:=Isogeny(S, wit_deg,deg_bound);
 	return y;
 end function;
