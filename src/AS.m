@@ -232,7 +232,7 @@ end function;
 adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
-	K:=y`kernel_points[1];
+	K:=y`isogeny`kernel_points[1];
 	// discrete log of K in terms of P_Y, Q_Y <-- s
 	S:= XAdd(K, (-1*P_Y), K);
 	s:=Log(Q_Y, S);
@@ -254,7 +254,7 @@ end function;
 // extract: (presign_isogeny, sig, P_Y, Q_Y, tau_P, tau_Q) --> (y)
 extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	// find kernel generator of sig 
-	K_R := sig`kernel_points[1];
+	K_R := sig`isogeny`kernel_points[1];
 	// compute presig hat
 	presig_hat:=DualIsogeny(presign_isogeny);
 	// run sidh on sig and presig hat
