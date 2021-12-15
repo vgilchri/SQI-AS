@@ -57,7 +57,8 @@ end function;
 sqias_witness_gen2:=function()
 	base_curve:=SemiMontgomery(E0);
 	basis5:=basis_of_power_of_5_torsion(base_curve);
-	P_Y, Q_Y :=basis5[1], basis5[2];
+	P_Y :=basis5[1];
+	Q_Y := basis5[2];
 	secret:=Random(5^16);
 	wit_ker:=P_Y + (secret * Q_Y);
 	ell:= 5^16;
