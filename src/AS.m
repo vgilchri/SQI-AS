@@ -64,7 +64,7 @@ sqias_witness_gen2:=function()
 	temp:=(secret * Q_Y);
 	wit_ker:=XAdd(P_Y , temp, P_Y);
 	"kernel computed";
-	ell:= 5^16;
+	ell:= 5^10;
 	degree_bound:= 5^21;
 	wit:=Isogeny(wit_ker, ell, degree_bound);
 	"defined witness";
