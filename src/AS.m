@@ -79,6 +79,8 @@ sqias_witness_gen2:=function()
 	"kernel computed";
 	secret;
 	temp;
+	"kernel is";
+	wit_ker;
 	ell:= 5^8;
 	degree_bound:= 5^21;
 	wit:=Isogeny(wit_ker, ell, degree_bound);
@@ -248,6 +250,8 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
 	K:=y`isogeny`kernel_points[1];
+	"ker is";
+	K;
 	// discrete log of K in terms of P_Y, Q_Y <-- s
 	S:= XAdd(K, (-1*P_Y), K);
 	S;
