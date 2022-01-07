@@ -71,7 +71,7 @@ sqias_witness_gen2:=function()
 	P_Y :=basis5[1];
 	Q_Y := basis5[2];
 	"basis done";
-	secret:=Random(5^16);
+	secret:=Random(5^5);
 	temp:=(secret * Q_Y);
 	wit_ker:=XAdd(P_Y , temp, P_Y);
 	"kernel computed";
