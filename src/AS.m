@@ -1,6 +1,17 @@
 
 load "src/sqisign.m";
 
+// discrete logarithm fn
+// Y = nX, return n
+find_log := function(X, Y);
+	n:= 1;
+	repeat
+		Z:= n*X;
+		n:= n +1;
+	until Z eq Y
+	return n;
+end function;
+
 // hard problem KeyGen / all KeyGen
 // generates: [y, (E_Y, P_Y, Q_Y, pi_Y)]
 // define degree sizes
@@ -235,7 +246,7 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	K:=y`isogeny`kernel_points[1];
 	// discrete log of K in terms of P_Y, Q_Y <-- s
 	S:= XAdd(K, (-1*P_Y), K);
-	s:=Log(Q_Y, S);
+	s:=find_log(Q_Y, S);
 	// tau_P + s tau_Q <-- K'
 	K2 := XAdd(tau_P, (s*tau_Q), tau_Q);
 	// iso(K2) <-- y'
@@ -261,7 +272,7 @@ extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	K_Y:=Evaluate(presig_hat,K_R);
 	// obtain secret int s
 	R_Y:= XAdd(K_Y,(-1*tau_P),K_Y);
-	s:=Log(tau_Q, R_Y);
+	s:=find_log(tau_Q, R_Y);
 	// define witness with new kernel
 	S:=XAdd(P_Y, ( s*Q_Y),P_Y);
 	y:=Isogeny(S, wit_deg,deg_bound);
