@@ -8,7 +8,7 @@ find_log := function(X, Y);
 	repeat
 		Z:= n*X;
 		n:= n+1;
-	until Z eq Y;
+	until (Z eq Y) or (n eq 5^4);
 	return n-1;
 	"loop done";
 	n;
@@ -77,6 +77,8 @@ sqias_witness_gen2:=function()
 	temp:=(secret * Q_Y);
 	wit_ker:=XAdd(P_Y , temp, P_Y);
 	"kernel computed";
+	secret;
+	temp;
 	ell:= 5^8;
 	degree_bound:= 5^21;
 	wit:=Isogeny(wit_ker, ell, degree_bound);
@@ -248,6 +250,7 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	K:=y`isogeny`kernel_points[1];
 	// discrete log of K in terms of P_Y, Q_Y <-- s
 	S:= XAdd(K, (-1*P_Y), K);
+	S;
 	s:=find_log(Q_Y, S);
 	// tau_P + s tau_Q <-- K'
 	K2 := XAdd(tau_P, (s*tau_Q), tau_Q);
