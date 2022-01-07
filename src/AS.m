@@ -7,9 +7,9 @@ find_log := function(X, Y);
 	n:= 1;
 	repeat
 		Z:= n*X;
-		n:= n +1;
-	until Z eq Y
-	return n;
+		n:= n+1;
+	until Z eq Y;
+	return n-1;
 end function;
 
 // hard problem KeyGen / all KeyGen
