@@ -26,7 +26,7 @@ monty_scalar_mult := function(n,P);
 end function;
 
 monty_subtract:=function(P,Q);
-	M:=Montgomery(P`curve);
+	M:=Montgomery(P`curve,Parent(P`X)!1);
 	P_A := Lift(P,M);
 	if (P_A[3] ne 1) and (P_A[3] ne 0) then
 		P_A[1] := P_A[1] div P_A[3];
