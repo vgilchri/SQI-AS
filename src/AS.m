@@ -16,7 +16,8 @@ end function;
 
 monty_scalar_mult := function(n,P);
 	counter := 2;
-	answer:= XAdd(P,P,0);
+	M:=P`curve;
+	answer:= XAdd(P,P,ZeroXZ(M));
 	repeat
 		answer := XAdd(P,answer,P);
 		counter := counter + 1;
@@ -25,7 +26,28 @@ monty_scalar_mult := function(n,P);
 end function;
 
 monty_subtract:=function(P,Q);
-	
+	M:=Montgomery(P`curve);
+	P_A := Lift(P,M);
+	if (P_A[3] ne 1) and (P_A[3] ne 0) then
+		P_A[1] := P_A[1] div P_A[3];
+		P_A[2] := P_A[2] div P_A[3];
+
+	Q_A := Lift(Q,M);
+	if (Q_A[3] ne 1) and (Q_A[3] ne 1) then 
+		Q_A[1] := Q_A[1] div Q_A[3];
+		Q_A[2] := Q_A[2] div Q_A[3];
+		
+	x1:= P_A[1];
+	y1:= P_A[2];
+	x2:= Q_A[1];
+	y2:= -1*Q_A[2];
+	B:= M`B;
+	A:= M`A;
+	x3:=(B(y2-y1)^2) div (x2-x1)^2 - A - x1 - x2;
+	y3:= ((2*x1 + x2 + A)*(y2 - y1) div (x2 - x1)) - (B(y2-y1)^3 div (x2-x1)^3) -y1;
+	x3:= x3 div y3;
+	z3:= 1 div y3;
+	return SemiMontgomeryXZ(x3,z3,M);
 end function;
 
 // hard problem KeyGen / all KeyGen
@@ -274,7 +296,7 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	s:=find_log(Q_Y, S);
 	// tau_P + s tau_Q <-- K'
 	tau_PQ:= monty_subtract(tau_P,tau_Q);
-	temp:=monty_scalar_mult(s,tau_Q);
+	temp:=s*tau_Q;
 	K2 := XAdd(tau_P, temp, tau_PQ);
 	// iso(K2) <-- y'
 	y2_deg:=tau_deg * y`degree;
@@ -301,7 +323,7 @@ extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	R_Y:= XAdd(K_Y,(-1*tau_P),K_Y);
 	s:=find_log(tau_Q, R_Y);
 	// define witness with new kernel
-	temp := monty_scalar_mult(s,Q_Y);
+	temp := s*Q_Y;
 	PQ_Y:=monty_subtract(P_Y,Q_Y);
 	S:=XAdd(P_Y, temp,PQ_Y);
 	y:=Isogeny(S, wit_deg,deg_bound);
