@@ -31,11 +31,13 @@ monty_subtract:=function(P,Q);
 	if (P_A[3] ne 1) and (P_A[3] ne 0) then
 		P_A[1] := P_A[1] div P_A[3];
 		P_A[2] := P_A[2] div P_A[3];
+	end if;
 
 	Q_A := Lift(Q,M);
 	if (Q_A[3] ne 1) and (Q_A[3] ne 1) then 
 		Q_A[1] := Q_A[1] div Q_A[3];
 		Q_A[2] := Q_A[2] div Q_A[3];
+	end if;
 		
 	x1:= P_A[1];
 	y1:= P_A[2];
