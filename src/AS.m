@@ -14,6 +14,20 @@ find_log := function(X, Y);
 	n;
 end function;
 
+monty_scalar_mult := function(n,P);
+	counter := 2;
+	answer:= XAdd(P,P,0);
+	repeat
+		answer := XAdd(P,answer,P);
+		counter := counter + 1;
+	until counter eq n;
+	return answer;
+end function;
+
+monty_subtract:=function(P,Q);
+	
+end function;
+
 // hard problem KeyGen / all KeyGen
 // generates: [y, (E_Y, P_Y, Q_Y, pi_Y)]
 // define degree sizes
@@ -72,10 +86,11 @@ sqias_witness_gen2:=function()
 	basis5:=basis_of_power_of_5_torsion(base_curve);
 	P_Y :=basis5[1];
 	Q_Y := basis5[2];
+	PQ_Y:=monty_subtract(P_Y,Q_Y);
 	"basis done";
 	secret:=Random(5^4);
-	temp:=(secret * Q_Y);
-	wit_ker:=XAdd(P_Y , temp, P_Y);
+	temp:=monty_scalar_mult(secret, Q_Y);
+	wit_ker:=XAdd(P_Y , temp, PQ_Y);
 	"kernel computed";
 	secret;
 	temp;
@@ -253,11 +268,14 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	"ker is";
 	K;
 	// discrete log of K in terms of P_Y, Q_Y <-- s
-	S:= XAdd(K, (-1*P_Y), K);
+	KP_Y:=monty_subtract(K,P_Y);
+	S:= XAdd(K, (-1*P_Y), KP_Y);
 	S;
 	s:=find_log(Q_Y, S);
 	// tau_P + s tau_Q <-- K'
-	K2 := XAdd(tau_P, (s*tau_Q), tau_Q);
+	tau_PQ:= monty_subtract(tau_P,tau_Q);
+	temp:=monty_scalar_mult(s,tau_Q);
+	K2 := XAdd(tau_P, temp, tau_PQ);
 	// iso(K2) <-- y'
 	y2_deg:=tau_deg * y`degree;
 	y2:=Isogeny(K2,y2_deg,deg_bound);
@@ -283,7 +301,9 @@ extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	R_Y:= XAdd(K_Y,(-1*tau_P),K_Y);
 	s:=find_log(tau_Q, R_Y);
 	// define witness with new kernel
-	S:=XAdd(P_Y, ( s*Q_Y),P_Y);
+	temp := monty_scalar_mult(s,Q_Y);
+	PQ_Y:=monty_subtract(P_Y,Q_Y);
+	S:=XAdd(P_Y, temp,PQ_Y);
 	y:=Isogeny(S, wit_deg,deg_bound);
 	return y;
 end function;
