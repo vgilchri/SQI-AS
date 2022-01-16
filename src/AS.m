@@ -28,21 +28,23 @@ end function;
 monty_subtract:=function(P,Q);
 	M:=Montgomery(P`curve,Parent(P`X)!1);
 	P_A := Lift(P,M);
-	if (P_A[3] ne 1) and (P_A[3] ne 0) then
-		P_A[1] := P_A[1] div P_A[3];
-		P_A[2] := P_A[2] div P_A[3];
+	x1:= P_A`x;
+	y1:= P_A`y;
+	z1:= P_A`z;
+	if (z1 ne 1) and (z1 ne 0) then
+		x1 := x1 div z1;
+		y1 := y1 div z1;
 	end if;
 
 	Q_A := Lift(Q,M);
-	if (Q_A[3] ne 1) and (Q_A[3] ne 1) then 
-		Q_A[1] := Q_A[1] div Q_A[3];
-		Q_A[2] := Q_A[2] div Q_A[3];
+	x2:= Q_A`x;
+	y2:= Q_A`y;
+	z2:= Q_A`z;
+	if (z2 ne 1) and (z2 ne 1) then 
+		x2 := x2 div z2;
+		y2 := y2 div z2;
 	end if;
-		
-	x1:= P_A[1];
-	y1:= P_A[2];
-	x2:= Q_A[1];
-	y2:= -1*Q_A[2];
+	y2:= -1*y2;
 	B:= M`B;
 	A:= M`A;
 	x3:=(B(y2-y1)^2) div (x2-x1)^2 - A - x1 - x2;
