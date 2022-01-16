@@ -294,7 +294,8 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	"ker is";
 	K;
 	// discrete log of K in terms of P_Y, Q_Y <-- s
-	KP_Y:=monty_subtract(K,P_Y);
+	KP_Y:=monty_subtract(K,-1*P_Y);
+	"KP_Y sub done";
 	S:= XAdd(K, (-1*P_Y), KP_Y);
 	S;
 	s:=find_log(Q_Y, S);
