@@ -1,4 +1,4 @@
-
+t
 load "src/sqisign.m";
 
 // discrete logarithm fn
