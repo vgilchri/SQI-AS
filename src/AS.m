@@ -115,7 +115,11 @@ sqias_witness_gen2:=function()
 	PQ_Y:=monty_subtract(P_Y,Q_Y);
 	"basis done";
 	secret:=Random(5^4);
+	"secret int is";
+	secret;
 	temp:=monty_scalar_mult(secret, Q_Y);
+	"secret times Q_Y is";
+	temp;
 	wit_ker:=XAdd(P_Y , temp, PQ_Y);
 	"kernel from witness_gen is";
 	wit_ker;
@@ -286,11 +290,15 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	// get y kernel generator <-- K
 	K:=y`isogeny`kernel_points[1];
 	// discrete log of K in terms of P_Y, Q_Y <-- s
-	KP_Y:=monty_subtract(K,-1*P_Y);
-	"KP_Y sub done";
-	S:= XAdd(K, (-1*P_Y), KP_Y);
+	//KP_Y:=monty_subtract(K,-1*P_Y);
+	//"KP_Y sub done";
+	//S:= XAdd(K, (-1*P_Y), KP_Y);
+	S:= monty_subtract(K, P_Y);
+	"here is K - P_Y";
 	S;
 	s:=find_log(Q_Y, S);
+	"secret int is";
+	s;
 	// tau_P + s tau_Q <-- K'
 	tau_PQ:= monty_subtract(tau_P,tau_Q);
 	temp:=s*tau_Q;
