@@ -276,7 +276,6 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 			tau_deg*:=phi_K[counter]`degree;
 			counter+:=1;
 		until counter eq (#phi_K +1);
-		"presign done";
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
 
@@ -286,8 +285,6 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
 	K:=y`isogeny`kernel_points[1];
-	"ker is";
-	K;
 	// discrete log of K in terms of P_Y, Q_Y <-- s
 	KP_Y:=monty_subtract(K,-1*P_Y);
 	"KP_Y sub done";
@@ -326,6 +323,8 @@ extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	temp := s*Q_Y;
 	PQ_Y:=monty_subtract(P_Y,Q_Y);
 	S:=XAdd(P_Y, temp,PQ_Y);
+	"ker after extracting is";
+	S;
 	y:=Isogeny(S, wit_deg,deg_bound);
 	return y;
 end function;
