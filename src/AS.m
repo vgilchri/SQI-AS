@@ -117,17 +117,12 @@ sqias_witness_gen2:=function()
 	secret:=Random(5^4);
 	temp:=monty_scalar_mult(secret, Q_Y);
 	wit_ker:=XAdd(P_Y , temp, PQ_Y);
-	"kernel computed";
-	secret;
-	temp;
-	"kernel is";
+	"kernel from witness_gen is";
 	wit_ker;
 	ell:= 5^8;
 	degree_bound:= 5^21;
 	wit:=Isogeny(wit_ker, ell, degree_bound);
-	"defined witness";
 	statement:= codomain(wit);
-	"defined statement";
 	return wit, statement, P_Y, Q_Y;
 end function; 
 
