@@ -32,8 +32,8 @@ monty_subtract:=function(P,Q);
 	y1:= P_A`y;
 	z1:= P_A`z;
 	if (z1 ne 1) and (z1 ne 0) then
-		x1 := x1 div z1;
-		y1 := y1 div z1;
+		x1 := x1 / z1;
+		y1 := y1 / z1;
 	end if;
 
 	Q_A := Lift(Q,M);
@@ -41,16 +41,16 @@ monty_subtract:=function(P,Q);
 	y2:= Q_A`y;
 	z2:= Q_A`z;
 	if (z2 ne 1) and (z2 ne 1) then 
-		x2 := x2 div z2;
-		y2 := y2 div z2;
+		x2 := x2 / z2;
+		y2 := y2 / z2;
 	end if;
 	y2:= -1*y2;
 	B:= M`B;
 	A:= M`A;
-	x3:=(B(y2-y1)^2) div (x2-x1)^2 - A - x1 - x2;
-	y3:= ((2*x1 + x2 + A)*(y2 - y1) div (x2 - x1)) - (B(y2-y1)^3 div (x2-x1)^3) -y1;
-	x3:= x3 div y3;
-	z3:= 1 div y3;
+	x3:=(B(y2-y1)^2) / (x2-x1)^2 - A - x1 - x2;
+	y3:= ((2*x1 + x2 + A)*(y2 - y1) / (x2 - x1)) - (B(y2-y1)^3 / (x2-x1)^3) -y1;
+	x3:= x3 / y3;
+	z3:= 1 / y3;
 	return SemiMontgomeryXZ(x3,z3,M);
 end function;
 
