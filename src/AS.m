@@ -51,7 +51,7 @@ monty_subtract:=function(P,Q);
 	y3:= ((2*x1 + x2 + A)*(y2 - y1) / (x2 - x1)) - (B*(y2-y1)^3 / (x2-x1)^3) -y1;
 	x3:= x3 / y3;
 	z3:= 1 / y3;
-	return SemiMontgomeryXZ(x3,z3,M);
+	return SemiMontgomeryXZ(x3,z3,P`curve);
 end function;
 
 // hard problem KeyGen / all KeyGen
