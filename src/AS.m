@@ -289,11 +289,13 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 // run sidh to get E_yA
 	// get y kernel generator <-- K
 	K:=y`isogeny`kernel_points[1];
+	"kernel called in adapt is";
+	K;
 	// discrete log of K in terms of P_Y, Q_Y <-- s
-	//KP_Y:=monty_subtract(K,-1*P_Y);
+	KP_Y:=monty_subtract(K,(-1*P_Y));
 	//"KP_Y sub done";
-	//S:= XAdd(K, (-1*P_Y), KP_Y);
-	S:= monty_subtract(K, P_Y);
+	S:= XAdd(K, (-1*P_Y), KP_Y);
+	//S:= monty_subtract(K, P_Y);
 	"here is K - P_Y";
 	S;
 	s:=find_log(Q_Y, S);
