@@ -112,14 +112,14 @@ sqias_witness_gen2:=function()
 	basis5:=basis_of_power_of_5_torsion(base_curve);
 	P_Y :=basis5[1];
 	Q_Y := basis5[2];
-	PQ_Y:=monty_subtract(P_Y,Q_Y);
 	"basis done";
 	secret:=Random(5^4);
 	"secret int is";
 	secret;
-	temp:=monty_scalar_mult(secret, Q_Y);
+	temp:=secret*Q_Y;
 	"secret times Q_Y is";
 	temp;
+	PQ_Y:=monty_subtract(P_Y,temp);
 	wit_ker:=XAdd(P_Y , temp, PQ_Y);
 	"kernel from witness_gen is";
 	wit_ker;
