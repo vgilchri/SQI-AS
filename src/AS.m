@@ -280,6 +280,8 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 			tau_deg*:=phi_K[counter]`degree;
 			counter+:=1;
 		until counter eq (#phi_K +1);
+		"tau_P is";
+		tau_P;
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
 
@@ -302,8 +304,8 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	"secret int is";
 	s;
 	// tau_P + s tau_Q <-- K'
-	tau_PQ:= monty_subtract(tau_P,tau_Q);
 	temp:=s*tau_Q;
+	tau_PQ:= monty_subtract(tau_P,temp);
 	K2 := XAdd(tau_P, temp, tau_PQ);
 	// iso(K2) <-- y'
 	y2_deg:=tau_deg * y`degree;
@@ -327,11 +329,14 @@ extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	// run sidh on sig and presig hat
 	K_Y:=Evaluate(presig_hat,K_R);
 	// obtain secret int s
-	R_Y:= XAdd(K_Y,(-1*tau_P),K_Y);
+	diff:=monty_subtract(K_Y, (-1*tau_P));
+	R_Y:= XAdd(K_Y,(-1*tau_P),diff);
 	s:=find_log(tau_Q, R_Y);
+	"secret recovered in extract is";
+	s;
 	// define witness with new kernel
 	temp := s*Q_Y;
-	PQ_Y:=monty_subtract(P_Y,Q_Y);
+	PQ_Y:=monty_subtract(P_Y,temp);
 	S:=XAdd(P_Y, temp,PQ_Y);
 	"ker after extracting is";
 	S;
