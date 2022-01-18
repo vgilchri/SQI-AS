@@ -35,7 +35,6 @@ monty_subtract:=function(P,Q);
 		x1 := x1 / z1;
 		y1 := y1 / z1;
 	end if;
-
 	Q_A := Lift(Q,M);
 	x2:= Q_A`x;
 	y2:= Q_A`y;
@@ -329,8 +328,8 @@ extract:=function(presign_isogeny,sig,P_Y,Q_Y,tau_P,tau_Q);
 	// run sidh on sig and presig hat
 	K_Y:=Evaluate(presig_hat,K_R);
 	// obtain secret int s
-	diff:=monty_subtract(K_Y, (-1*tau_P));
-	R_Y:= XAdd(K_Y,(-1*tau_P),diff);
+	tau_KP:=monty_subtract(K_Y, (-1*tau_P));
+	R_Y:= XAdd(K_Y,(-1*tau_P),tau_KP);
 	s:=find_log(tau_Q, R_Y);
 	"secret recovered in extract is";
 	s;
