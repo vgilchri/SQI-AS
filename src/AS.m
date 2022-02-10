@@ -25,9 +25,9 @@ monty_scalar_mult := function(n,P);
 	return answer;
 end function;
 
-monty_subtract:=function(P,Q);
-	M:=Montgomery(P`curve,Parent(P`X)!1);
-	P_A := Lift(P,M);
+monty_subtract:=function(P_A,Q_A);
+	// M:=Montgomery(P`curve,Parent(P`X)!1);
+	// P_A := Lift(P,M);
 	x1:= P_A`x;
 	y1:= P_A`y;
 	z1:= P_A`z;
@@ -35,7 +35,7 @@ monty_subtract:=function(P,Q);
 		x1 := x1 / z1;
 		y1 := y1 / z1;
 	end if;
-	Q_A := Lift(Q,M);
+	// Q_A := Lift(Q,M);
 	x2:= Q_A`x;
 	y2:= Q_A`y;
 	z2:= Q_A`z;
@@ -287,8 +287,6 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 			tau_deg*:=phi_K[counter]`degree;
 			counter+:=1;
 		until counter eq (#phi_K);
-		tau_P := SemiMontgomeryXZ(tau_P`X,tau_P`Z,tau_P`curve);
-		tau_Q:= SemiMontgomeryXZ(tau_Q`X,tau_Q`Z,tau_Q`curve);
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
 
@@ -301,7 +299,10 @@ adapt:=function(presign_isogeny,y,P_Y, Q_Y, tau_P, tau_Q, tau_deg);
 	"kernel called in adapt is";
 	K;
 	// discrete log of K in terms of P_Y, Q_Y <-- s
-	KP_Y:=monty_subtract(K,(-1*P_Y));
+	M:=Montgomery(K`curve,Parent(K`X)!1);
+	P_A := Lift(K,M);
+	Q_A := Lift((-1*P_Y),M);
+	KP_Y:=monty_subtract(P_A,Q_A);
 	//"KP_Y sub done";
 	S:= XAdd(K, (-1*P_Y), KP_Y);
 	//S:= monty_subtract(K, P_Y);
