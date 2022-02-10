@@ -118,7 +118,10 @@ sqias_witness_gen2:=function()
 	temp:=secret*Q_Y;
 	"secret times Q_Y is";
 	temp;
-	PQ_Y:=monty_subtract(P_Y,temp);
+	M:=Montgomery(P_Y`curve,Parent(P_Y`X)!1);
+	P_A := Lift(P_Y,M);
+	Q_A:= Lift(temp,M);
+	PQ_Y:=monty_subtract(P_A,Q_A);
 	wit_ker:=XAdd(P_Y , temp, PQ_Y);
 	"kernel from witness_gen is";
 	wit_ker;
