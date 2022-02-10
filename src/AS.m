@@ -26,7 +26,7 @@ monty_scalar_mult := function(n,P);
 end function;
 
 monty_subtract:=function(P_A,Q_A);
-	// M:=Montgomery(P`curve,Parent(P`X)!1);
+	M:=Montgomery(P_A`curve,Parent(P_A`X)!1);
 	// P_A := Lift(P,M);
 	x1:= P_A`x;
 	y1:= P_A`y;
