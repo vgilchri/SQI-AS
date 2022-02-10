@@ -287,8 +287,8 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 			tau_deg*:=phi_K[counter]`degree;
 			counter+:=1;
 		until counter eq (#phi_K);
-		tau_P := SmiMntyXZ(tau_P`X,tau_P`Z,tau_P`curve);
-		tau_Q:= SmiMntyXZ(tau_Q`X,tau_Q`Z,tau_Q`curve);
+		tau_P := SemiMontgomeryXZ(tau_P`X,tau_P`Z,tau_P`curve);
+		tau_Q:= SemiMontgomeryXZ(tau_Q`X,tau_Q`Z,tau_Q`curve);
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
 
