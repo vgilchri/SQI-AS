@@ -282,6 +282,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 			phi_K[counter]`degree;
 			M:=Montgomery(tau_P`curve,Parent(tau_P`X)!1);
 			P_A := Lift(tau_P,M);
+			P_AA:= Lift(P_A, M);
 			tau_P:=Evaluate(phi_K[counter], [tau_P])[1];
 			tau_Q:=Evaluate(phi_K[counter], [tau_Q])[1];
 			tau_deg*:=phi_K[counter]`degree;
