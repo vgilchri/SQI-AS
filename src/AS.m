@@ -278,6 +278,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 		repeat
 			"counter is";
 			counter;
+			input:= tau_P;
 			M:=Montgomery(tau_P`curve,Parent(tau_P`X)!1);
 			// P_A:=Lift(tau_P,M);
 			tau_P:=Evaluate(phi_K[counter], [tau_P])[1];
@@ -285,7 +286,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 			tau_deg*:=phi_K[counter]`degree;
 			counter+:=1;
 			if not (IsOnCurve(tau_P)) then 
-				return phi_K[counter],tau_P,0,0,0,0,0,0,0,0,0;
+				return phi_K[counter],input,0,0,0,0,0,0,0,0,0;
 			end if;
 		until counter eq (#phi_K);
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
