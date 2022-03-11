@@ -284,10 +284,10 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 			tau_P:=Evaluate(phi_K[counter], [tau_P])[1];
 			tau_Q:=Evaluate(phi_K[counter], [tau_Q])[1];
 			tau_deg*:=phi_K[counter]`degree;
-			counter+:=1;
 			if not (IsOnCurve(tau_P)) then 
 				return phi_K[counter],input,0,0,0,0,0,0,0,0,0;
 			end if;
+			counter+:=1;
 		until counter eq (#phi_K);
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
