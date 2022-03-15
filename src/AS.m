@@ -4,12 +4,12 @@ load "src/sqisign.m";
 sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
 counter :=1;
 repeat
-	if phi_K[counter]`isogeny`kernel`X eq 0 and counter < #phi_K then 
+	if phi_K[counter]`isogeny`kernel`X eq 0 and counter le #phi_K then 
 		y:=[];
 		for i in [1..counter-1] do y cat [phi_K[i]]; end for;
 		for j in [counter + 1..#phi_K] do y cat [phi_K[j]]; end for;
 		phi_K:=y;
-	else counter := counter + 1; end if;
+		else counter := counter + 1; end if;
 until counter eq (#phi_K );
 
 // discrete logarithm fn
