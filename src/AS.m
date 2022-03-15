@@ -1,18 +1,25 @@
 
 load "src/sqisign.m";
 
+// secret gen in sqisign is having problems, where about half of the isogenies are identity isogenies (might be due to limitations in magma)
+// these are causing problems in pushing our statement basis through so we remove them from the secret key here
 sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
-counter :=1;
-repeat
-	if phi_K[counter]`isogeny`kernel`X eq 0 and counter le #phi_K then 
-		y:=[];
-		for i in [1..counter-1] do 
-			y:= y cat [phi_K[i]]; end for;
-		for j in [counter + 1..#phi_K] do 
-			y:= y cat [phi_K[j]]; end for;
-		phi_K:=y;
-		else counter := counter + 1; end if;
-until counter eq (#phi_K );
+//counter :=1;
+//repeat
+//	if phi_K[counter]`isogeny`kernel`X eq 0 and counter le #phi_K then 
+//		y:=[];
+//		for i in [1..counter-1] do 
+//			y:= y cat [phi_K[i]]; end for;
+//		for j in [counter + 1..#phi_K] do 
+//			y:= y cat [phi_K[j]]; end for;
+//		phi_K:=y;
+//		else counter := counter + 1; end if;
+//until counter eq (#phi_K );
+y:=[];
+for i in [1..33] do
+	y:= y cat phi_K[i];
+	end for;
+phi_k:= y;
 
 // discrete logarithm fn
 // Y = nX, return n
