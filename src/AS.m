@@ -9,7 +9,7 @@ repeat
 		for i in [1..counter-1] do y cat [phi_K[i]]; end for;
 		for j in [counter + 1..#phi_K] do y cat [phi_K[j]]; end for;
 		phi_K:=y;
-	else counter +=1; end if;
+	else counter := counter + 1; end if;
 until counter eq (#phi_K );
 
 // discrete logarithm fn
