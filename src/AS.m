@@ -19,7 +19,7 @@ y:=[];
 for i in [1..32] do
 	y:= y cat [phi_K[i]];
 	end for;
-phi_k:= y;
+phi_K:= y;
 
 // discrete logarithm fn
 // Y = nX, return n
