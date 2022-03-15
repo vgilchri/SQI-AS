@@ -1,6 +1,17 @@
 
 load "src/sqisign.m";
 
+sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
+counter :=1;
+repeat
+	if IsIdentity(phi_K[counter]`isogeny`kernel) then 
+		y:=[];
+		for i in [1..counter-1] do y cat [phi_K[i]]; end for;
+		for j in [counter + 1..#phi_K] do y cat [phi_K[j]]; end for;
+		phi_K:=y;
+	else counter +=1; end if;
+until counter eq (#phi_K );
+
 // discrete logarithm fn
 // Y = nX, return n
 find_log := function(X, Y);
@@ -288,7 +299,7 @@ presign := function(sk,pk,K,phi_K,isom_K,J,phi_J,epsilon, E_Y, P_Y, Q_Y)
 				return phi_K[counter],input,0,0,0,0,0,0,0,0,0;
 			end if;
 			counter+:=1;
-		until counter eq (#phi_K);
+		until counter eq (#phi_K -1);
 	return commit_time,challenge_time,klpt_time,translate_time,sign_time,verif_time,Valuation(Z!Norm(sign_ideal),2), tau_P, tau_Q, presign_isogeny,tau_deg;
 end function;
 
@@ -377,7 +388,7 @@ Test_sqias:=procedure()
 		//"\n Test_sqisign \n number of batches:",number_batch," number of rounds:",number_round," \n";
 	//for index in [1..number_batch] do
 		t:=ClockCycles();
-		sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
+		// sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
 		gen_time:=timediff(t);
 		gen_times:=sort_insert(gen_times,gen_time);
 		for ind in [1..number_round] do
