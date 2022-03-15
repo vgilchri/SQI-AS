@@ -28,8 +28,10 @@ ideal_to_isogeny_power_of_two2 := function(I, J, K, phi_J, phi_K,isom_K,epsilon:
 	I_tot:=I_long*I_second;
 
 	long_isogeny := [];
-	// iterations := Floor(N/(2*n + epsilon));
-	iterations:=32;
+	iterations2 := Floor(N/(2*n + epsilon));
+	"iterations orig is";
+	iterations2;
+	iterations:=1;
 	I_step := I_long + O0*(T2*2^(2*n + epsilon));
 	assert Valuation(Integers()!Norm(I_step),2) eq 2*n+epsilon;
 	J_step := J;
