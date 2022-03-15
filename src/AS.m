@@ -5,7 +5,6 @@ load "src/sqisign.m";
 // these are causing problems in pushing our statement basis through so we remove them from the secret key here
 
 sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
-wit, E_Y, P_Y, Q_Y:=sqias_witness_gen2();
 
 // discrete logarithm fn
 // Y = nX, return n
@@ -134,6 +133,8 @@ sqias_witness_gen2:=function()
 	statement:= codomain(wit);
 	return wit, statement, P_Y, Q_Y;
 end function; 
+
+wit, E_Y, P_Y, Q_Y:=sqias_witness_gen2();
 
 // generate commitment with E_Y hash
 sqi_gen_commitment_odd:=function(E_Y)
