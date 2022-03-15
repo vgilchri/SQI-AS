@@ -17,7 +17,7 @@ sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
 //until counter eq (#phi_K );
 y:=[];
 for i in [1..33] do
-	y:= y cat phi_K[i];
+	y:= y cat [phi_K[i]];
 	end for;
 phi_k:= y;
 
