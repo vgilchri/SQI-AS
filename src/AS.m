@@ -176,7 +176,7 @@ gen_keys2 :=function()
 	pk:=codomain(phi_K[#phi_K]);
 	return secret_ideal,pk, K,phi_K,isom_K,J,phi_J;
 end function;
-sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys2();
+sk,pk,K,phi_K,isom_K,J,phi_J:=gen_keys();
 
 // discrete logarithm fn
 // Y = nX, return n
